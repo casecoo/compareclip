@@ -325,8 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const player1Name = document.getElementById('player1Name').value.trim() || t.player1Default;
     const player2Name = document.getElementById('player2Name').value.trim() || t.player2Default;
 
-    // Automatic backend resolution: localhost for local dev, Render.com for production
-    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // Automatic backend resolution: localhost/file protocol for local dev, Render.com for production
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '';
     const defaultRenderUrl = 'https://compareclip-backend.onrender.com';
     const apiUrlInput = document.getElementById('apiUrl');
     const baseUrl = apiUrlInput && apiUrlInput.value.trim()
