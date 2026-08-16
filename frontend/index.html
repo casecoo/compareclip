@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VS Video Comparison Generator</title>
+  <meta name="description" content="Generate viral 9:16 vertical battle comparison videos instantly.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-glow"></div>
+  
+  <div class="container">
+    <header class="app-header">
+      <div class="logo-badge">⚡ VIRAL VS CREATOR</div>
+      <h1>Video Comparison Generator</h1>
+      <p class="subtitle">Upload two vertical clips, customize character names & categories, and generate a beat-synced VS video.</p>
+    </header>
+
+    <main class="app-main">
+      <form id="generatorForm" class="config-card">
+        
+        <!-- Players Setup Grid -->
+        <div class="players-grid">
+          <!-- Player 1 -->
+          <div class="player-card player-1-theme">
+            <div class="player-header">
+              <span class="player-badge">PLAYER 1 (TOP)</span>
+            </div>
+            <div class="form-group">
+              <label for="player1Name">Character / Title</label>
+              <input type="text" id="player1Name" name="player1Name" value="BATMAN" required placeholder="e.g. BATMAN">
+            </div>
+            <div class="form-group">
+              <label>Video Clip (Max 20s)</label>
+              <div class="file-dropzone" id="dropzone1">
+                <input type="file" id="video1" name="video1" accept="video/*" required class="file-input">
+                <div class="dropzone-content">
+                  <div class="upload-icon">📹</div>
+                  <span class="file-label" id="label1">Choose or drop Video 1</span>
+                  <span class="file-info">Vertical MP4/MOV recommended</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-divider">
+            <div class="vs-circle">VS</div>
+          </div>
+
+          <!-- Player 2 -->
+          <div class="player-card player-2-theme">
+            <div class="player-header">
+              <span class="player-badge">PLAYER 2 (BOTTOM)</span>
+            </div>
+            <div class="form-group">
+              <label for="player2Name">Character / Title</label>
+              <input type="text" id="player2Name" name="player2Name" value="X-MEN" required placeholder="e.g. X-MEN">
+            </div>
+            <div class="form-group">
+              <label>Video Clip (Max 20s)</label>
+              <div class="file-dropzone" id="dropzone2">
+                <input type="file" id="video2" name="video2" accept="video/*" required class="file-input">
+                <div class="dropzone-content">
+                  <div class="upload-icon">📹</div>
+                  <span class="file-label" id="label2">Choose or drop Video 2</span>
+                  <span class="file-info">Vertical MP4/MOV recommended</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories & Tags Input -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2>Comparison Categories</h2>
+            <span class="hint-text">Add or remove metrics for comparison</span>
+          </div>
+
+          <div class="tags-container" id="tagsContainer">
+            <!-- Dynamic tags will be rendered here -->
+          </div>
+
+          <div class="add-tag-row">
+            <input type="text" id="newTagInput" placeholder="Add custom tag (e.g. STRENGTH)" maxlength="25">
+            <button type="button" id="addTagBtn" class="btn-secondary">+ Add Tag</button>
+          </div>
+        </div>
+
+        <!-- API Server Config -->
+        <div class="section-card api-config-card">
+          <div class="form-group">
+            <label for="apiUrl">Backend API URL</label>
+            <input type="url" id="apiUrl" name="apiUrl" value="http://localhost:8000" placeholder="https://your-render-app.onrender.com">
+            <span class="field-hint">Points to your Render.com FastAPI backend</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-wrapper">
+          <button type="submit" id="submitBtn" class="btn-primary">
+            <span class="btn-text">🎬 Generate VS Video</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Processing State Modal / Card -->
+      <div id="processingCard" class="status-card hidden">
+        <div class="spinner-ring"></div>
+        <h3>Rendering Your Video...</h3>
+        <p class="status-timer">Elapsed time: <span id="timerText">00:00</span></p>
+        <div class="notice-box">
+          <span class="notice-icon">ℹ️</span>
+          <span><strong>Render.com Cold Start:</strong> If the server hasn't been used recently, the initial request can take 30–60 seconds to spin up. Please hang tight!</span>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div id="resultCard" class="status-card result-card hidden">
+        <div class="success-icon">✨</div>
+        <h2>Video Ready!</h2>
+        
+        <div class="video-preview-wrapper">
+          <video id="outputVideoPlayer" controls playsinline></video>
+        </div>
+
+        <div class="result-actions">
+          <a id="downloadBtn" download="vs_comparison.mp4" class="btn-primary download-link">
+            <span>💾 Download MP4 Video</span>
+          </a>
+          <button type="button" id="resetBtn" class="btn-secondary">
+            🔄 Create Another
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
