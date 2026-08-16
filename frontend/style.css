@@ -147,7 +147,7 @@ body {
 .config-card {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  gap: 2.4rem;
 }
 
 .players-grid {
@@ -333,6 +333,7 @@ input[type="text"]:focus {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  margin-top: 0.5rem;
 }
 
 .section-header {
@@ -580,7 +581,7 @@ input[type="text"]:focus {
   }
 
   .app-header {
-    margin-top: 1.5rem;
+    margin-top: 3.2rem;
     margin-bottom: 1.8rem;
   }
 
@@ -648,6 +649,10 @@ input[type="text"]:focus {
 @media (max-width: 480px) {
   body {
     padding: 0.8rem 0.5rem;
+  }
+
+  .app-header {
+    margin-top: 3.6rem;
   }
 
   .app-header h1 {
