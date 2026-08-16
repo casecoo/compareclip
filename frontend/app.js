@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Automatic backend resolution: localhost/file protocol for local dev, Render.com for production
     const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '';
-    const defaultRenderUrl = 'https://compareclip-backend.onrender.com';
+    const defaultRenderUrl = 'https://compareclip.onrender.com';
     const apiUrlInput = document.getElementById('apiUrl');
     const baseUrl = apiUrlInput && apiUrlInput.value.trim()
       ? apiUrlInput.value.trim().replace(/\/$/, '')
