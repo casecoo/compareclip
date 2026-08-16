@@ -132,9 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const player1Name = document.getElementById('player1Name').value.trim() || 'BATMAN';
-    const player2Name = document.getElementById('player2Name').value.trim() || 'X-MEN';
-    const baseUrl = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
+    const player1Name = document.getElementById('player1Name').value.trim() || 'PLAYER 1';
+    const player2Name = document.getElementById('player2Name').value.trim() || 'PLAYER 2';
+    
+    // Automatic backend resolution: localhost for local dev, Render.com for production
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const defaultRenderUrl = 'https://compareclip-backend.onrender.com';
+    const apiUrlInput = document.getElementById('apiUrl');
+    const baseUrl = apiUrlInput && apiUrlInput.value.trim()
+      ? apiUrlInput.value.trim().replace(/\/$/, '')
+      : (isLocalHost ? 'http://localhost:8000' : defaultRenderUrl);
+
 
     const formData = new FormData();
     formData.append('video1', video1Input.files[0]);
