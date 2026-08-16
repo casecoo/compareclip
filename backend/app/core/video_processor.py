@@ -32,13 +32,14 @@ def generate_comparison_video(
     tags: List[str],
     output_path: Union[str, Path],
     audio_path: Optional[Union[str, Path]] = None,
-    intro_duration: float = 2.0,
+    intro_duration: float = 6.0,
     tag_duration: float = 0.6,
     tag_winners: Optional[Dict[str, str]] = None,
     width: int = 1080,
     height: int = 1920,
     fps: int = 24
 ) -> str:
+
     """
     Generates a vertical comparison video ('VS' format) between two input video clips
     for a list of category tags.

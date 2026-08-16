@@ -52,9 +52,9 @@ async def compare_videos(
     background_tasks: BackgroundTasks,
     video1: UploadFile = File(..., description="First video clip (top half)"),
     video2: UploadFile = File(..., description="Second video clip (bottom half)"),
-    player1_name: str = Form("BATMAN"),
-    player2_name: str = Form("X-MEN"),
-    categories: str = Form("IQ, SPEED, BATTLE IQ, DURABILITY")
+    player1_name: str = Form("PLAYER 1"),
+    player2_name: str = Form("PLAYER 2"),
+    categories: str = Form("IQ, BATTLE IQ, SPEED, DURABILITY, STRENGTH, POWER, AGILITY, COMBAT, ENDURANCE")
 ):
     # Parse categories (supports JSON array string or comma-separated string)
     category_list: List[str] = []
@@ -66,7 +66,8 @@ async def compare_videos(
         category_list = [cat.strip() for cat in categories.split(",") if cat.strip()]
 
     if not category_list:
-        category_list = ["IQ", "SPEED", "DURABILITY"]
+        category_list = ["IQ", "BATTLE IQ", "SPEED", "DURABILITY", "STRENGTH", "POWER", "AGILITY", "COMBAT", "ENDURANCE"]
+
 
     # Create temporary directory for input/output files
     temp_dir = tempfile.mkdtemp(prefix="vid_comp_")

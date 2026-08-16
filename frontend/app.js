@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Default tags list
-  let tags = ['IQ', 'SPEED', 'BATTLE IQ', 'DURABILITY'];
+  // Default 9 beat-synced tags list for song.mp3 (6s intro + 9 tag rounds + winner reveal = 23s)
+  let tags = ['IQ', 'BATTLE IQ', 'SPEED', 'DURABILITY', 'STRENGTH', 'POWER', 'AGILITY', 'COMBAT', 'ENDURANCE'];
 
   // DOM Elements
   const generatorForm = document.getElementById('generatorForm');
   const tagsContainer = document.getElementById('tagsContainer');
+  const tagCountText = document.getElementById('tagCountText');
   const newTagInput = document.getElementById('newTagInput');
   const addTagBtn = document.getElementById('addTagBtn');
   
@@ -29,6 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render Category Tags
   function renderTags() {
     tagsContainer.innerHTML = '';
+    if (tagCountText) {
+      tagCountText.textContent = tags.length;
+    }
     tags.forEach((tag, idx) => {
       const pill = document.createElement('span');
       pill.className = 'tag-pill';
@@ -44,8 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  // Add custom tag
+  // Add custom tag (Maximum 9 tags to match song timing)
   function addTag() {
+    if (tags.length >= 9) {
+      alert('Maximum 9 category tags are allowed for song beat synchronization.');
+      return;
+    }
     const val = newTagInput.value.trim().toUpperCase();
     if (val && !tags.includes(val)) {
       tags.push(val);
@@ -53,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderTags();
     }
   }
+
 
   addTagBtn.addEventListener('click', addTag);
   newTagInput.addEventListener('keydown', (e) => {
@@ -122,10 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
   generatorForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    if (tags.length === 0) {
-      alert('Please add at least one comparison category tag.');
+    if (tags.length !== 9) {
+      alert('Please provide exactly 9 category tags to sync with the song beat drop.');
       return;
     }
+
 
     if (!video1Input.files[0] || !video2Input.files[0]) {
       alert('Please upload both Video 1 and Video 2 clips.');
