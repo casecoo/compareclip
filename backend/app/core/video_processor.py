@@ -59,7 +59,13 @@ def generate_comparison_video(
         video_clip2 = VideoFileClip(str(video2_path))
         audio_clip = AudioFileClip(str(audio_path))
 
+        if video_clip1.duration < 6.0 or video_clip2.duration < 6.0:
+            raise ValueError(
+                f"Both video clips must be at least 6.0 seconds long (Video 1: {video_clip1.duration:.1f}s, Video 2: {video_clip2.duration:.1f}s)"
+            )
+
         player_list = [player1_name, player2_name]
+
 
         # Determine winner for each category tag if not explicitly provided
         if not tag_winners:

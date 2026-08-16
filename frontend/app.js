@@ -127,6 +127,20 @@ document.addEventListener('DOMContentLoaded', () => {
     clearInterval(timerInterval);
   }
 
+  // Helper to read video file duration in browser
+  function getVideoDuration(file) {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(video.duration);
+      };
+      video.onerror = () => resolve(0);
+      video.src = URL.createObjectURL(file);
+    });
+  }
+
   // Form Submit Handler
   generatorForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -136,11 +150,25 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-
     if (!video1Input.files[0] || !video2Input.files[0]) {
       alert('Please upload both Video 1 and Video 2 clips.');
       return;
     }
+
+    // Validate minimum 6-second video duration
+    const dur1 = await getVideoDuration(video1Input.files[0]);
+    const dur2 = await getVideoDuration(video2Input.files[0]);
+
+    if (dur1 > 0 && dur1 < 6.0) {
+      alert(`Video 1 must be at least 6 seconds long for intro sync (Current: ${dur1.toFixed(1)}s).`);
+      return;
+    }
+
+    if (dur2 > 0 && dur2 < 6.0) {
+      alert(`Video 2 must be at least 6 seconds long for intro sync (Current: ${dur2.toFixed(1)}s).`);
+      return;
+    }
+
 
     const player1Name = document.getElementById('player1Name').value.trim() || 'PLAYER 1';
     const player2Name = document.getElementById('player2Name').value.trim() || 'PLAYER 2';

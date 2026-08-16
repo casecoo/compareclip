@@ -65,8 +65,12 @@ async def compare_videos(
     except Exception:
         category_list = [cat.strip() for cat in categories.split(",") if cat.strip()]
 
-    if not category_list:
-        category_list = ["IQ", "BATTLE IQ", "SPEED", "DURABILITY", "STRENGTH", "POWER", "AGILITY", "COMBAT", "ENDURANCE"]
+    if len(category_list) != 9:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Exactly 9 category tags are required for song beat synchronization (Provided: {len(category_list)})."
+        )
+
 
 
     # Create temporary directory for input/output files
