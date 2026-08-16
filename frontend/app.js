@@ -24,14 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
       videoReadyTitle: "VİDEO HAZIR!",
       downloadBtn: "💾 MP4 VİDEOYU İNDİR",
       createAnotherBtn: "🔄 BAŞKA OLUŞTUR",
-      need9Tags: "Lütfen şarkı ritmi ile uyum sağlamak için tam 9 kategori tag'i ekleyin.",
-      max9Tags: "Şarkı ritim senkronizasyonu için maksimum 9 kategori tag'i eklenebilir.",
-      needBothVideos: "Lütfen hem 1. hem de 2. Video kliplerini yükleyin.",
-      vid1Min6s: "1. Video giriş senkronizasyonu için en az 6 saniye olmalıdır (Mevcut: ",
-      vid2Min6s: "2. Video giriş senkronizasyonu için en az 6 saniye olmalıdır (Mevcut: ",
+      need9Tags: "LÜTFEN RİTİM UYUMU İÇİN TAM 9 KATEGORİ TAG'İ EKLEYİN.",
+      max9Tags: "MAKSİMUM 9 KATEGORİ TAG'İ EKLENEBİLİR!",
+      needBothVideos: "LÜTFEN HEM 1. HEM DE 2. VİDEO KLİPLERİNİ YÜKLEYİN.",
+      vid1Min6s: "1. VİDEO EN AZ 6 SANİYE OLMALIDIR (MEVCUT: ",
+      vid2Min6s: "2. VİDEO EN AZ 6 SANİYE OLMALIDIR (MEVCUT: ",
       player1Default: "1. OYUNCU",
       player2Default: "2. OYUNCU",
-      failedGen: "Video oluşturma başarısız oldu: "
+      failedGen: "VİDEO OLUŞTURMA BAŞARISIZ OLDU: "
     },
     en: {
       subtitle: "Upload two vertical clips, customize character names & categories, and generate a beat-synced VS video.",
@@ -53,14 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
       videoReadyTitle: "VIDEO READY!",
       downloadBtn: "💾 DOWNLOAD MP4 VIDEO",
       createAnotherBtn: "🔄 CREATE ANOTHER",
-      need9Tags: "Please provide exactly 9 category tags to sync with the song beat drop.",
-      max9Tags: "Maximum 9 category tags are allowed for song beat synchronization.",
-      needBothVideos: "Please upload both Video 1 and Video 2 clips.",
-      vid1Min6s: "Video 1 must be at least 6 seconds long for intro sync (Current: ",
-      vid2Min6s: "Video 2 must be at least 6 seconds long for intro sync (Current: ",
+      need9Tags: "PLEASE PROVIDE EXACTLY 9 CATEGORY TAGS FOR BEAT SYNC.",
+      max9Tags: "MAXIMUM 9 CATEGORY TAGS ALLOWED!",
+      needBothVideos: "PLEASE UPLOAD BOTH VIDEO 1 AND VIDEO 2 CLIPS.",
+      vid1Min6s: "VIDEO 1 MUST BE AT LEAST 6 SECONDS LONG (CURRENT: ",
+      vid2Min6s: "VIDEO 2 MUST BE AT LEAST 6 SECONDS LONG (CURRENT: ",
       player1Default: "PLAYER 1",
       player2Default: "PLAYER 2",
-      failedGen: "Failed to generate video: "
+      failedGen: "FAILED TO GENERATE VIDEO: "
     }
   };
 
@@ -86,6 +86,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('resetBtn');
   const submitBtn = document.getElementById('submitBtn');
   const langBtns = document.querySelectorAll('.lang-btn');
+
+  const retroToast = document.getElementById('retroToast');
+  const toastMessage = document.getElementById('toastMessage');
+  const toastCloseBtn = document.getElementById('toastCloseBtn');
+  let toastTimeout = null;
+
+  function showToast(msg, isError = false) {
+    if (!retroToast || !toastMessage) {
+      alert(msg);
+      return;
+    }
+    toastMessage.textContent = msg;
+    if (isError) {
+      retroToast.classList.add('toast-error');
+    } else {
+      retroToast.classList.remove('toast-error');
+    }
+    retroToast.classList.remove('hidden');
+
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      retroToast.classList.add('hidden');
+    }, 3500);
+  }
+
+  if (toastCloseBtn) {
+    toastCloseBtn.addEventListener('click', () => {
+      retroToast.classList.add('hidden');
+    });
+  }
 
   let timerInterval = null;
   let currentObjectUrl = null;
@@ -174,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addTag() {
     const t = translations[currentLang];
     if (tags.length >= 9) {
-      alert(t.max9Tags);
+      showToast(t.max9Tags);
       return;
     }
     const val = newTagInput.value.trim().toUpperCase();
@@ -269,12 +299,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const t = translations[currentLang];
 
     if (tags.length !== 9) {
-      alert(t.need9Tags);
+      showToast(t.need9Tags);
       return;
     }
 
     if (!video1Input.files[0] || !video2Input.files[0]) {
-      alert(t.needBothVideos);
+      showToast(t.needBothVideos);
       return;
     }
 
@@ -283,12 +313,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const dur2 = await getVideoDuration(video2Input.files[0]);
 
     if (dur1 > 0 && dur1 < 6.0) {
-      alert(`${t.vid1Min6s}${dur1.toFixed(1)}s).`);
+      showToast(`${t.vid1Min6s}${dur1.toFixed(1)}s).`);
       return;
     }
 
     if (dur2 > 0 && dur2 < 6.0) {
-      alert(`${t.vid2Min6s}${dur2.toFixed(1)}s).`);
+      showToast(`${t.vid2Min6s}${dur2.toFixed(1)}s).`);
       return;
     }
 
@@ -352,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stopTimer();
       processingCard.classList.add('hidden');
       generatorForm.classList.remove('hidden');
-      alert(`${t.failedGen}${err.message}`);
+      showToast(`${t.failedGen}${err.message}`, true);
     }
   });
 
