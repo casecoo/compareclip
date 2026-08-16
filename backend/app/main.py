@@ -6,6 +6,10 @@ import tempfile
 from pathlib import Path
 from typing import List
 
+import PIL.Image
+if not hasattr(PIL.Image, 'ANTIALIAS'):
+    PIL.Image.ANTIALIAS = PIL.Image.Resampling.LANCZOS
+
 # Ensure project root directory is in sys.path
 project_root = str(Path(__file__).resolve().parent.parent.parent)
 if project_root not in sys.path:

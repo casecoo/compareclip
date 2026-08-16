@@ -1,6 +1,11 @@
 import os
 import sys
 from pathlib import Path
+
+import PIL.Image
+if not hasattr(PIL.Image, 'ANTIALIAS'):
+    PIL.Image.ANTIALIAS = PIL.Image.Resampling.LANCZOS
+
 from moviepy.config import change_settings
 
 # Base directory paths
