@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VS Video Comparison Generator</title>
+  <title>Compare Clips</title>
   <meta name="description" content="Generate viral 9:16 vertical battle comparison videos instantly.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,13 +18,18 @@
   <canvas id="pixelSpaceCanvas"></canvas>
   <div class="background-glow"></div>
 
+  <!-- Top Right Language Switcher -->
+  <div class="lang-switcher">
+    <button type="button" class="lang-btn active" data-lang="tr">TR</button>
+    <button type="button" class="lang-btn" data-lang="en">EN</button>
+  </div>
 
   <div class="container">
     <header class="app-header">
+      <!-- Title elements remain strictly untranslated in English as requested -->
       <div class="logo-badge">VIRAL VS CREATOR</div>
       <h1>Video Comparison Generator</h1>
-      <p class="subtitle">Upload two vertical clips, customize character names & categories, and generate a beat-synced
-        VS video.</p>
+      <p class="subtitle" data-i18n="subtitle">İki dikey video yükleyin, karakter isimlerini ve kategorileri özelleştirin, ritim senkronlu VS videosu oluşturun.</p>
     </header>
 
     <main class="app-main">
@@ -35,20 +40,20 @@
           <!-- Player 1 -->
           <div class="player-card player-1-theme">
             <div class="player-header">
-              <span class="player-badge">PLAYER 1 (TOP)</span>
+              <span class="player-badge" data-i18n="player1Badge">1. OYUNCU (ÜST)</span>
             </div>
             <div class="form-group">
-              <label for="player1Name">Character / Title</label>
+              <label for="player1Name" data-i18n="characterTitleLabel">Karakter / Başlık</label>
               <input type="text" id="player1Name" name="player1Name" value="" required placeholder="e.g. BATMAN">
             </div>
             <div class="form-group">
-              <label>Video Clip (Min 6s, Max 20s)</label>
+              <label data-i18n="videoClipLabel">Video Klip (Min 6sn, Max 20sn)</label>
               <div class="file-dropzone" id="dropzone1">
                 <input type="file" id="video1" name="video1" accept="video/*" required class="file-input">
                 <div class="dropzone-content">
                   <div class="upload-icon">📹</div>
-                  <span class="file-label" id="label1">Choose or drop Video 1</span>
-                  <span class="file-info">Vertical MP4/MOV recommended</span>
+                  <span class="file-label" id="label1" data-i18n="chooseVideo1">1. Videoyu Seçin veya Sürükleyin</span>
+                  <span class="file-info" data-i18n="videoFileInfo">Dikey MP4/MOV tavsiye edilir</span>
                 </div>
               </div>
             </div>
@@ -61,20 +66,20 @@
           <!-- Player 2 -->
           <div class="player-card player-2-theme">
             <div class="player-header">
-              <span class="player-badge">PLAYER 2 (BOTTOM)</span>
+              <span class="player-badge" data-i18n="player2Badge">2. OYUNCU (ALT)</span>
             </div>
             <div class="form-group">
-              <label for="player2Name">Character / Title</label>
+              <label for="player2Name" data-i18n="characterTitleLabel">Karakter / Başlık</label>
               <input type="text" id="player2Name" name="player2Name" value="" required placeholder="e.g. X-MEN">
             </div>
             <div class="form-group">
-              <label>Video Clip (Min 6s, Max 20s)</label>
+              <label data-i18n="videoClipLabel">Video Klip (Min 6sn, Max 20sn)</label>
               <div class="file-dropzone" id="dropzone2">
                 <input type="file" id="video2" name="video2" accept="video/*" required class="file-input">
                 <div class="dropzone-content">
                   <div class="upload-icon">📹</div>
-                  <span class="file-label" id="label2">Choose or drop Video 2</span>
-                  <span class="file-info">Vertical MP4/MOV recommended</span>
+                  <span class="file-label" id="label2" data-i18n="chooseVideo2">2. Videoyu Seçin veya Sürükleyin</span>
+                  <span class="file-info" data-i18n="videoFileInfo">Dikey MP4/MOV tavsiye edilir</span>
                 </div>
               </div>
             </div>
@@ -84,18 +89,17 @@
         <!-- Categories & Tags Input -->
         <div class="section-card">
           <div class="section-header">
-            <h2>Comparison Categories (<span id="tagCountText">9</span>/9 Tags)</h2>
-            <span class="hint-text">9 tags required for beat-sync (6s intro + 9 rounds)</span>
+            <h2><span data-i18n="categoriesTitle">Karşılaştırma Kategorileri</span> (<span id="tagCountText">0</span>/9 Tag)</h2>
+            <span class="hint-text" data-i18n="categoriesHint">Ritim uyumu için 9 tag gereklidir (6sn intro + 9 round)</span>
           </div>
-
 
           <div class="tags-container" id="tagsContainer">
             <!-- Dynamic tags will be rendered here -->
           </div>
 
           <div class="add-tag-row">
-            <input type="text" id="newTagInput" placeholder="Add custom tag (e.g. STRENGTH)" maxlength="25">
-            <button type="button" id="addTagBtn" class="btn-secondary">+ Add Tag</button>
+            <input type="text" id="newTagInput" data-i18n-placeholder="addTagPlaceholder" placeholder="Özel tag ekle (örn. GÜÇ)" maxlength="25">
+            <button type="button" id="addTagBtn" class="btn-secondary" data-i18n="addTagBtn">+ Tag Ekle</button>
           </div>
         </div>
 
@@ -103,7 +107,7 @@
         <!-- Submit Button -->
         <div class="submit-wrapper">
           <button type="submit" id="submitBtn" class="btn-primary">
-            <span class="btn-text">🎬 Generate VS Video</span>
+            <span class="btn-text" data-i18n="generateBtn">🎬 VS VİDEO OLUŞTUR</span>
           </button>
         </div>
       </form>
@@ -111,30 +115,29 @@
       <!-- Processing State Modal / Card -->
       <div id="processingCard" class="status-card hidden">
         <div class="spinner-ring"></div>
-        <h3>Rendering Your Video...</h3>
-        <p class="status-timer">Elapsed time: <span id="timerText">00:00</span></p>
+        <h3 data-i18n="renderingTitle">VİDEONUZ HAZIRLANIYOR...</h3>
+        <p class="status-timer"><span data-i18n="elapsedTime">Geçen süre:</span> <span id="timerText">00:00</span></p>
         <div class="notice-box">
           <span class="notice-icon">ℹ️</span>
-          <span><strong>Render.com Cold Start:</strong> If the server hasn't been used recently, the initial request can
-            take 30–60 seconds to spin up. Please hang tight!</span>
+          <span data-i18n-html="coldStartNotice"><strong>Render.com Soğuk Başlangıç:</strong> Sunucu son zamanlarda kullanılmadıysa, ilk istek 30–60 saniye sürebilir. Lütfen bekleyin!</span>
         </div>
       </div>
 
       <!-- Result Card -->
       <div id="resultCard" class="status-card result-card hidden">
         <div class="success-icon">✨</div>
-        <h2>Video Ready!</h2>
-
+        <h2 data-i18n="videoReadyTitle">VİDEO HAZIR!</h2>
+        
         <div class="video-preview-wrapper">
           <video id="outputVideoPlayer" controls playsinline></video>
         </div>
 
         <div class="result-actions">
           <a id="downloadBtn" download="vs_comparison.mp4" class="btn-primary download-link">
-            <span>💾 Download MP4 Video</span>
+            <span data-i18n="downloadBtn">💾 MP4 VİDEOYU İNDİR</span>
           </a>
-          <button type="button" id="resetBtn" class="btn-secondary">
-            🔄 Create Another
+          <button type="button" id="resetBtn" class="btn-secondary" data-i18n="createAnotherBtn">
+            🔄 BAŞKA OLUŞTUR
           </button>
         </div>
       </div>

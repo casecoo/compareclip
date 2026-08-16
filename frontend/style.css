@@ -38,11 +38,46 @@ body {
   padding: 2rem 1rem;
 }
 
+/* Top Right Language Switcher */
+.lang-switcher {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.3rem;
+  background: rgba(9, 10, 15, 0.85);
+  border: 2px solid var(--retro-purple);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 12px rgba(167, 139, 250, 0.35);
+  z-index: 100;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Silkscreen', monospace;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.lang-btn.active {
+  background: var(--retro-purple);
+  color: #090a0f;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.6);
+}
+
 /* Moving Pixel Canvas Background */
 #pixelSpaceCanvas {
   position: fixed;
   top: 0;
   left: 0;
+
   width: 100vw;
   height: 100vh;
   z-index: -2;

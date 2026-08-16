@@ -1,6 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Default 9 beat-synced tags list for song.mp3 (6s intro + 9 tag rounds + winner reveal = 23s)
-  let tags = ['IQ', 'BATTLE IQ', 'SPEED', 'DURABILITY', 'STRENGTH', 'POWER', 'AGILITY', 'COMBAT', 'ENDURANCE'];
+  // Default tags list is empty as requested by the user
+  let tags = [];
+  let currentLang = 'tr'; // Default language is TR
+
+  const translations = {
+    tr: {
+      subtitle: "İki dikey video yükleyin, karakter isimlerini ve kategorileri özelleştirin, ritim senkronlu VS videosu oluşturun.",
+      player1Badge: "1. OYUNCU (ÜST)",
+      player2Badge: "2. OYUNCU (ALT)",
+      characterTitleLabel: "Karakter / Başlık",
+      videoClipLabel: "Video Klip (Min 6sn, Max 20sn)",
+      chooseVideo1: "1. Videoyu Seçin veya Sürükleyin",
+      chooseVideo2: "2. Videoyu Seçin veya Sürükleyin",
+      videoFileInfo: "Dikey MP4/MOV tavsiye edilir",
+      categoriesTitle: "Karşılaştırma Kategorileri",
+      categoriesHint: "Ritim uyumu için 9 tag gereklidir (6sn intro + 9 round)",
+      addTagPlaceholder: "Özel tag ekle (örn. GÜÇ)",
+      addTagBtn: "+ Tag Ekle",
+      generateBtn: "🎬 VS VİDEO OLUŞTUR",
+      renderingTitle: "VİDEONUZ HAZIRLANIYOR...",
+      elapsedTime: "Geçen süre:",
+      coldStartNotice: "<strong>Render.com Soğuk Başlangıç:</strong> Sunucu son zamanlarda kullanılmadıysa, ilk istek 30–60 saniye sürebilir. Lütfen bekleyin!",
+      videoReadyTitle: "VİDEO HAZIR!",
+      downloadBtn: "💾 MP4 VİDEOYU İNDİR",
+      createAnotherBtn: "🔄 BAŞKA OLUŞTUR",
+      need9Tags: "Lütfen şarkı ritmi ile uyum sağlamak için tam 9 kategori tag'i ekleyin.",
+      max9Tags: "Şarkı ritim senkronizasyonu için maksimum 9 kategori tag'i eklenebilir.",
+      needBothVideos: "Lütfen hem 1. hem de 2. Video kliplerini yükleyin.",
+      vid1Min6s: "1. Video giriş senkronizasyonu için en az 6 saniye olmalıdır (Mevcut: ",
+      vid2Min6s: "2. Video giriş senkronizasyonu için en az 6 saniye olmalıdır (Mevcut: ",
+      player1Default: "1. OYUNCU",
+      player2Default: "2. OYUNCU",
+      failedGen: "Video oluşturma başarısız oldu: "
+    },
+    en: {
+      subtitle: "Upload two vertical clips, customize character names & categories, and generate a beat-synced VS video.",
+      player1Badge: "PLAYER 1 (TOP)",
+      player2Badge: "PLAYER 2 (BOTTOM)",
+      characterTitleLabel: "Character / Title",
+      videoClipLabel: "Video Clip (Min 6s, Max 20s)",
+      chooseVideo1: "Choose or drop Video 1",
+      chooseVideo2: "Choose or drop Video 2",
+      videoFileInfo: "Vertical MP4/MOV recommended",
+      categoriesTitle: "Comparison Categories",
+      categoriesHint: "9 tags required for beat-sync (6s intro + 9 rounds)",
+      addTagPlaceholder: "Add custom tag (e.g. STRENGTH)",
+      addTagBtn: "+ Add Tag",
+      generateBtn: "🎬 GENERATE VS VIDEO",
+      renderingTitle: "RENDERING YOUR VIDEO...",
+      elapsedTime: "Elapsed time:",
+      coldStartNotice: "<strong>Render.com Cold Start:</strong> If the server hasn't been used recently, the initial request can take 30–60 seconds to spin up. Please hang tight!",
+      videoReadyTitle: "VIDEO READY!",
+      downloadBtn: "💾 DOWNLOAD MP4 VIDEO",
+      createAnotherBtn: "🔄 CREATE ANOTHER",
+      need9Tags: "Please provide exactly 9 category tags to sync with the song beat drop.",
+      max9Tags: "Maximum 9 category tags are allowed for song beat synchronization.",
+      needBothVideos: "Please upload both Video 1 and Video 2 clips.",
+      vid1Min6s: "Video 1 must be at least 6 seconds long for intro sync (Current: ",
+      vid2Min6s: "Video 2 must be at least 6 seconds long for intro sync (Current: ",
+      player1Default: "PLAYER 1",
+      player2Default: "PLAYER 2",
+      failedGen: "Failed to generate video: "
+    }
+  };
 
   // DOM Elements
   const generatorForm = document.getElementById('generatorForm');
@@ -23,9 +85,69 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadBtn = document.getElementById('downloadBtn');
   const resetBtn = document.getElementById('resetBtn');
   const submitBtn = document.getElementById('submitBtn');
+  const langBtns = document.querySelectorAll('.lang-btn');
 
   let timerInterval = null;
   let currentObjectUrl = null;
+
+  // Language Switcher Logic
+  function setLanguage(lang) {
+    if (!translations[lang]) return;
+    currentLang = lang;
+
+    // Update active button state
+    langBtns.forEach(btn => {
+      if (btn.getAttribute('data-lang') === lang) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const t = translations[lang];
+
+    // Update text content for elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key]) {
+        el.textContent = t[key];
+      }
+    });
+
+    // Update innerHTML for elements with data-i18n-html attribute
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if (t[key]) {
+        el.innerHTML = t[key];
+      }
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (t[key]) {
+        el.placeholder = t[key];
+      }
+    });
+
+    // Update file dropzone default labels if no file selected
+    if (!video1Input.files || !video1Input.files[0]) {
+      label1.textContent = t.chooseVideo1;
+    }
+    if (!video2Input.files || !video2Input.files[0]) {
+      label2.textContent = t.chooseVideo2;
+    }
+
+    document.documentElement.lang = lang;
+  }
+
+  // Register Language Switcher Click Handlers
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selectedLang = btn.getAttribute('data-lang');
+      setLanguage(selectedLang);
+    });
+  });
 
   // Render Category Tags
   function renderTags() {
@@ -50,8 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Add custom tag (Maximum 9 tags to match song timing)
   function addTag() {
+    const t = translations[currentLang];
     if (tags.length >= 9) {
-      alert('Maximum 9 category tags are allowed for song beat synchronization.');
+      alert(t.max9Tags);
       return;
     }
     const val = newTagInput.value.trim().toUpperCase();
@@ -61,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
       renderTags();
     }
   }
-
 
   addTagBtn.addEventListener('click', addTag);
   newTagInput.addEventListener('keydown', (e) => {
@@ -81,18 +203,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // File Input Visual Handlers
-  function handleFileInputChange(input, labelElement, defaultText) {
+  function handleFileInputChange(input, labelElement, defaultKey) {
     input.addEventListener('change', () => {
       if (input.files && input.files[0]) {
         labelElement.textContent = `📁 ${input.files[0].name}`;
       } else {
-        labelElement.textContent = defaultText;
+        labelElement.textContent = translations[currentLang][defaultKey];
       }
     });
   }
 
-  handleFileInputChange(video1Input, label1, 'Choose or drop Video 1');
-  handleFileInputChange(video2Input, label2, 'Choose or drop Video 2');
+  handleFileInputChange(video1Input, label1, 'chooseVideo1');
+  handleFileInputChange(video2Input, label2, 'chooseVideo2');
 
   // Drag and drop support
   [dropzone1, dropzone2].forEach((dropzone) => {
@@ -144,14 +266,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Form Submit Handler
   generatorForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const t = translations[currentLang];
 
     if (tags.length !== 9) {
-      alert('Please provide exactly 9 category tags to sync with the song beat drop.');
+      alert(t.need9Tags);
       return;
     }
 
     if (!video1Input.files[0] || !video2Input.files[0]) {
-      alert('Please upload both Video 1 and Video 2 clips.');
+      alert(t.needBothVideos);
       return;
     }
 
@@ -160,18 +283,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const dur2 = await getVideoDuration(video2Input.files[0]);
 
     if (dur1 > 0 && dur1 < 6.0) {
-      alert(`Video 1 must be at least 6 seconds long for intro sync (Current: ${dur1.toFixed(1)}s).`);
+      alert(`${t.vid1Min6s}${dur1.toFixed(1)}s).`);
       return;
     }
 
     if (dur2 > 0 && dur2 < 6.0) {
-      alert(`Video 2 must be at least 6 seconds long for intro sync (Current: ${dur2.toFixed(1)}s).`);
+      alert(`${t.vid2Min6s}${dur2.toFixed(1)}s).`);
       return;
     }
 
-
-    const player1Name = document.getElementById('player1Name').value.trim() || 'PLAYER 1';
-    const player2Name = document.getElementById('player2Name').value.trim() || 'PLAYER 2';
+    const player1Name = document.getElementById('player1Name').value.trim() || t.player1Default;
+    const player2Name = document.getElementById('player2Name').value.trim() || t.player2Default;
     
     // Automatic backend resolution: localhost for local dev, Render.com for production
     const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -180,7 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const baseUrl = apiUrlInput && apiUrlInput.value.trim()
       ? apiUrlInput.value.trim().replace(/\/$/, '')
       : (isLocalHost ? 'http://localhost:8000' : defaultRenderUrl);
-
 
     const formData = new FormData();
     formData.append('video1', video1Input.files[0]);
@@ -231,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stopTimer();
       processingCard.classList.add('hidden');
       generatorForm.classList.remove('hidden');
-      alert(`Failed to generate video: ${err.message}`);
+      alert(`${t.failedGen}${err.message}`);
     }
   });
 
@@ -313,7 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Canvas Background
   initPixelSpaceCanvas();
 
-  // Initial tag render
+  // Initialize TR language by default
+  setLanguage('tr');
+
+  // Initial tag render (empty by default)
   renderTags();
 });
-
