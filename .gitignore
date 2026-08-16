@@ -41,3 +41,8 @@ wheels/
 # Temporary & cache
 temp/
 .pytest_cache/
+
+# Ignored project files
+PROJECT.md
+input.txt
+
