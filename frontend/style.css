@@ -2,7 +2,7 @@
   --bg-dark: #07080d;
   --card-bg: rgba(14, 18, 30, 0.92);
   --card-border-default: rgba(255, 255, 255, 0.12);
-  
+
   /* Retro Theme Colors from reference images */
   --retro-purple: #a78bfa;
   --retro-green: #34d399;
@@ -11,7 +11,7 @@
   --retro-blue: #3b82f6;
   --retro-cyan: #38bdf8;
   --retro-red: #ef4444;
-  
+
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --radius-lg: 12px;
@@ -281,7 +281,8 @@ input[type="text"]:focus {
   transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.file-dropzone:hover, .file-dropzone.dragover {
+.file-dropzone:hover,
+.file-dropzone.dragover {
   border-color: var(--retro-yellow);
   background: rgba(251, 191, 36, 0.08);
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
@@ -381,11 +382,25 @@ input[type="text"]:focus {
 }
 
 /* Dynamic Retro Color Palette for Tags */
-.tag-pill:nth-child(5n+1) { background-color: var(--retro-purple); }
-.tag-pill:nth-child(5n+2) { background-color: var(--retro-green); }
-.tag-pill:nth-child(5n+3) { background-color: var(--retro-yellow); }
-.tag-pill:nth-child(5n+4) { background-color: var(--retro-pink); }
-.tag-pill:nth-child(5n+5) { background-color: var(--retro-cyan); }
+.tag-pill:nth-child(5n+1) {
+  background-color: var(--retro-purple);
+}
+
+.tag-pill:nth-child(5n+2) {
+  background-color: var(--retro-green);
+}
+
+.tag-pill:nth-child(5n+3) {
+  background-color: var(--retro-yellow);
+}
+
+.tag-pill:nth-child(5n+4) {
+  background-color: var(--retro-pink);
+}
+
+.tag-pill:nth-child(5n+5) {
+  background-color: var(--retro-cyan);
+}
 
 .tag-remove-btn {
   background: none;
@@ -485,7 +500,9 @@ input[type="text"]:focus {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .status-card h3 {
@@ -616,7 +633,9 @@ input[type="text"]:focus {
     font-size: 0.85rem;
   }
 
-  .player-card, .section-card, .status-card {
+  .player-card,
+  .section-card,
+  .status-card {
     padding: 1.1rem;
   }
 
@@ -699,4 +718,3 @@ input[type="text"]:focus {
     max-width: 280px;
   }
 }
-

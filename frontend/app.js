@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
       subtitle: "İki dikey video yükleyin, karakter isimlerini ve kategorileri özelleştirin, ritim senkronlu VS videosu oluşturun.",
       player1Badge: "1. OYUNCU (ÜST)",
       player2Badge: "2. OYUNCU (ALT)",
-      characterTitleLabel: "Karakter / Başlık",
-      videoClipLabel: "Video Klip (Min 6sn, Max 20sn)",
+      characterTitleLabel: "KARAKTER / BAŞLIK",
+      videoClipLabel: "VİDEO KLİP (MIN 6SN, MAX 20SN)",
       chooseVideo1: "1. Videoyu Seçin veya Sürükleyin",
       chooseVideo2: "2. Videoyu Seçin veya Sürükleyin",
       videoFileInfo: "Dikey MP4/MOV tavsiye edilir",
-      categoriesTitle: "Karşılaştırma Kategorileri",
+      categoriesTitle: "KARŞILAŞTIRMA KATEGORİLERİ",
       categoriesHint: "Ritim uyumu için 9 tag gereklidir (6sn intro + 9 round)",
       addTagPlaceholder: "Özel tag ekle (örn. GÜÇ)",
       addTagBtn: "+ Tag Ekle",
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tagCountText = document.getElementById('tagCountText');
   const newTagInput = document.getElementById('newTagInput');
   const addTagBtn = document.getElementById('addTagBtn');
-  
+
   const video1Input = document.getElementById('video1');
   const video2Input = document.getElementById('video2');
   const label1 = document.getElementById('label1');
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const player1Name = document.getElementById('player1Name').value.trim() || t.player1Default;
     const player2Name = document.getElementById('player2Name').value.trim() || t.player2Default;
-    
+
     // Automatic backend resolution: localhost for local dev, Render.com for production
     const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const defaultRenderUrl = 'https://compareclip-backend.onrender.com';
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const errorJson = await response.json();
           if (errorJson.detail) errMessage = errorJson.detail;
-        } catch (_) {}
+        } catch (_) { }
         throw new Error(errMessage);
       }
 
