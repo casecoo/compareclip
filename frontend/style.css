@@ -556,3 +556,142 @@ input[type="text"]:focus {
 .download-link {
   flex: 1;
 }
+
+/* ==========================================================================
+   Responsive & Mobile Design Rules
+   ========================================================================== */
+
+/* Tablet & Mobile (< 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 1.2rem 0.8rem;
+    font-size: 1.15rem;
+  }
+
+  .lang-switcher {
+    top: 0.8rem;
+    right: 0.8rem;
+    padding: 2px;
+  }
+
+  .lang-btn {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .app-header {
+    margin-top: 1.5rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .app-header h1 {
+    font-size: clamp(1.3rem, 5.5vw, 2.2rem);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-badge {
+    font-size: 0.55rem;
+    padding: 0.4rem 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .subtitle {
+    font-size: 1.15rem;
+    padding: 0 0.5rem;
+  }
+
+  .players-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .vs-divider {
+    margin: 0.3rem 0;
+  }
+
+  .vs-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 0.85rem;
+  }
+
+  .player-card, .section-card, .status-card {
+    padding: 1.1rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .section-header h2 {
+    font-size: 1rem;
+  }
+
+  .hint-text {
+    font-size: 1.05rem;
+  }
+
+  .btn-primary {
+    font-size: 1rem;
+    padding: 0.95rem 1.2rem;
+  }
+
+  .result-actions {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+}
+
+/* Small Mobile Phones (< 480px) */
+@media (max-width: 480px) {
+  body {
+    padding: 0.8rem 0.5rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .add-tag-row {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .add-tag-row input {
+    width: 100%;
+  }
+
+  .add-tag-row button {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  .file-dropzone {
+    padding: 1rem 0.6rem;
+  }
+
+  .file-label {
+    font-size: 1.1rem;
+  }
+
+  .file-info {
+    font-size: 0.95rem;
+  }
+
+  .tag-pill {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .notice-box {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+
+  .video-preview-wrapper {
+    max-width: 280px;
+  }
+}
+
