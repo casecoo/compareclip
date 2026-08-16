@@ -119,9 +119,29 @@ body {
   letter-spacing: 1px;
   padding: 0.5rem 1.2rem;
   border-radius: 6px;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.6rem;
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
   text-transform: uppercase;
+}
+
+.header-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.4rem 0 1rem 0;
+}
+
+.header-logo-icon {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.45));
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.header-logo-icon:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 24px rgba(251, 191, 36, 0.7));
 }
 
 .app-header h1 {
