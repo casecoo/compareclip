@@ -1,15 +1,24 @@
 import os
+import sys
 import json
 import shutil
 import tempfile
 from pathlib import Path
 from typing import List
+
+# Ensure project root directory is in sys.path
+project_root = str(Path(__file__).resolve().parent.parent.parent)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 from backend.app.core.video_processor import generate_comparison_video
 from backend.app.core.config import DEFAULT_AUDIO_PATH
+
+
 
 app = FastAPI(
     title="Video Comparison Generator API",

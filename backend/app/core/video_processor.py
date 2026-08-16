@@ -1,7 +1,14 @@
 import os
+import sys
 import random
 from pathlib import Path
 from typing import List, Dict, Optional, Union
+
+# Ensure project root directory is in sys.path
+project_root = str(Path(__file__).resolve().parent.parent.parent.parent)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from moviepy.editor import (
     VideoFileClip,
     clips_array,
@@ -11,6 +18,8 @@ from moviepy.editor import (
 )
 
 from backend.app.core.config import configure_imagemagick, DEFAULT_AUDIO_PATH
+
+
 
 # Ensure ImageMagick is configured properly on module import
 configure_imagemagick()
