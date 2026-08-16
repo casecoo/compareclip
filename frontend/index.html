@@ -44,14 +44,14 @@
           <!-- Player 1 -->
           <div class="player-card player-1-theme">
             <div class="player-header">
-              <span class="player-badge" data-i18n="player1Badge">1. OYUNCU (ÜST)</span>
+              <span class="player-badge" data-i18n="player1Badge">1. OYUNCU (UST)</span>
             </div>
             <div class="form-group">
-              <label for="player1Name" data-i18n="characterTitleLabel">KARAKTER / BAŞLIK</label>
+              <label for="player1Name" data-i18n="characterTitleLabel">KARAKTER / BASLIK</label>
               <input type="text" id="player1Name" name="player1Name" value="" required placeholder="e.g. BATMAN">
             </div>
             <div class="form-group">
-              <label data-i18n="videoClipLabel">VİDEO KLİP (MIN 6SN, MAX 20SN)</label>
+              <label data-i18n="videoClipLabel">VIDEO KLIP (MIN 6SN, MAX 20SN)</label>
               <div class="file-dropzone" id="dropzone1">
                 <input type="file" id="video1" name="video1" accept="video/*" required class="file-input">
                 <div class="dropzone-content">
@@ -73,11 +73,11 @@
               <span class="player-badge" data-i18n="player2Badge">2. OYUNCU (ALT)</span>
             </div>
             <div class="form-group">
-              <label for="player2Name" data-i18n="characterTitleLabel">KARAKTER / BAŞLIK</label>
+              <label for="player2Name" data-i18n="characterTitleLabel">KARAKTER / BASLIK</label>
               <input type="text" id="player2Name" name="player2Name" value="" required placeholder="e.g. X-MEN">
             </div>
             <div class="form-group">
-              <label data-i18n="videoClipLabel">VİDEO KLİP (MIN 6SN, MAX 20SN)</label>
+              <label data-i18n="videoClipLabel">VIDEO KLIP (MIN 6SN, MAX 20SN)</label>
               <div class="file-dropzone" id="dropzone2">
                 <input type="file" id="video2" name="video2" accept="video/*" required class="file-input">
                 <div class="dropzone-content">
@@ -93,7 +93,7 @@
         <!-- Categories & Tags Input -->
         <div class="section-card">
           <div class="section-header">
-            <h2><span data-i18n="categoriesTitle">KARŞILAŞTIRMA KATEGORİLERİ</span> (<span id="tagCountText">0</span>/9 Tag)</h2>
+            <h2><span data-i18n="categoriesTitle">KARSILASTIRMA KATEGORILERI</span> (<span id="tagCountText">0</span>/9 Tag)</h2>
             <span class="hint-text" data-i18n="categoriesHint">Ritim uyumu için 9 tag gereklidir (6sn intro + 9 round)</span>
           </div>
 
@@ -111,7 +111,7 @@
         <!-- Submit Button -->
         <div class="submit-wrapper">
           <button type="submit" id="submitBtn" class="btn-primary">
-            <span class="btn-text" data-i18n="generateBtn">🎬 VS VİDEO OLUŞTUR</span>
+            <span class="btn-text" data-i18n="generateBtn">🎬 VS VIDEO OLUSTUR</span>
           </button>
         </div>
       </form>
@@ -119,7 +119,7 @@
       <!-- Processing State Modal / Card -->
       <div id="processingCard" class="status-card hidden">
         <div class="spinner-ring"></div>
-        <h3 data-i18n="renderingTitle">VİDEONUZ HAZIRLANIYOR...</h3>
+        <h3 data-i18n="renderingTitle">VIDEONUZ HAZIRLANIYOR...</h3>
         <p class="status-timer"><span data-i18n="elapsedTime">Geçen süre:</span> <span id="timerText">00:00</span></p>
         <div class="notice-box">
           <span class="notice-icon">ℹ️</span>
@@ -130,7 +130,7 @@
       <!-- Result Card -->
       <div id="resultCard" class="status-card result-card hidden">
         <div class="success-icon">✨</div>
-        <h2 data-i18n="videoReadyTitle">VİDEO HAZIR!</h2>
+        <h2 data-i18n="videoReadyTitle">VIDEO HAZIR!</h2>
         
         <div class="video-preview-wrapper">
           <video id="outputVideoPlayer" controls playsinline></video>
@@ -138,10 +138,10 @@
 
         <div class="result-actions">
           <a id="downloadBtn" download="vs_comparison.mp4" class="btn-primary download-link">
-            <span data-i18n="downloadBtn">💾 MP4 VİDEOYU İNDİR</span>
+            <span data-i18n="downloadBtn">💾 MP4 VIDEOYU INDIR</span>
           </a>
           <button type="button" id="resetBtn" class="btn-secondary" data-i18n="createAnotherBtn">
-            🔄 BAŞKA OLUŞTUR
+            🔄 BASKA OLUSTUR
           </button>
         </div>
       </div>
