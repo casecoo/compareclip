@@ -245,6 +245,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Floating Pixel Space Canvas Particle System (Matching Reference Image 1)
+  function initPixelSpaceCanvas() {
+    const canvas = document.getElementById('pixelSpaceCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const particleCount = Math.min(140, Math.floor((width * height) / 9000));
+
+    const colors = [
+      'rgba(255, 255, 255, ',
+      'rgba(167, 139, 250, ',
+      'rgba(56, 189, 248, ',
+      'rgba(244, 114, 182, ',
+      'rgba(251, 191, 36, '
+    ];
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.floor(Math.random() * 3 + 1) * 2, // 2px, 4px, 6px pixel squares
+        speedY: (Math.random() - 0.5) * 0.45,
+        speedX: (Math.random() - 0.5) * 0.35,
+        alpha: Math.random() * 0.6 + 0.15,
+        colorPrefix: colors[Math.floor(Math.random() * colors.length)],
+        pulseSpeed: Math.random() * 0.015 + 0.005
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p) => {
+        p.y += p.speedY;
+        p.x += p.speedX;
+        p.alpha += p.pulseSpeed;
+
+        if (p.alpha > 0.8 || p.alpha < 0.1) {
+          p.pulseSpeed = -p.pulseSpeed;
+        }
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.fillStyle = `${p.colorPrefix}${p.alpha.toFixed(2)})`;
+        ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  // Initialize Canvas Background
+  initPixelSpaceCanvas();
+
   // Initial tag render
   renderTags();
 });
+

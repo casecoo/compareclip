@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,28 @@
   <meta name="description" content="Generate viral 9:16 vertical battle comparison videos instantly.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+  <canvas id="pixelSpaceCanvas"></canvas>
   <div class="background-glow"></div>
-  
+
+
   <div class="container">
     <header class="app-header">
-      <div class="logo-badge">⚡ VIRAL VS CREATOR</div>
+      <div class="logo-badge">VIRAL VS CREATOR</div>
       <h1>Video Comparison Generator</h1>
-      <p class="subtitle">Upload two vertical clips, customize character names & categories, and generate a beat-synced VS video.</p>
+      <p class="subtitle">Upload two vertical clips, customize character names & categories, and generate a beat-synced
+        VS video.</p>
     </header>
 
     <main class="app-main">
       <form id="generatorForm" class="config-card">
-        
+
         <!-- Players Setup Grid -->
         <div class="players-grid">
           <!-- Player 1 -->
@@ -108,7 +115,8 @@
         <p class="status-timer">Elapsed time: <span id="timerText">00:00</span></p>
         <div class="notice-box">
           <span class="notice-icon">ℹ️</span>
-          <span><strong>Render.com Cold Start:</strong> If the server hasn't been used recently, the initial request can take 30–60 seconds to spin up. Please hang tight!</span>
+          <span><strong>Render.com Cold Start:</strong> If the server hasn't been used recently, the initial request can
+            take 30–60 seconds to spin up. Please hang tight!</span>
         </div>
       </div>
 
@@ -116,7 +124,7 @@
       <div id="resultCard" class="status-card result-card hidden">
         <div class="success-icon">✨</div>
         <h2>Video Ready!</h2>
-        
+
         <div class="video-preview-wrapper">
           <video id="outputVideoPlayer" controls playsinline></video>
         </div>
@@ -135,4 +143,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
