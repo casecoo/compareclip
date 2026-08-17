@@ -814,3 +814,53 @@ input[type="text"]:focus {
     transform: translate(-50%, 0);
   }
 }
+
+/* API Server Selector Card */
+.api-server-card {
+  background: rgba(14, 18, 30, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.api-server-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.api-server-label {
+  font-family: 'Silkscreen', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.server-badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: var(--retro-purple);
+  color: #090a0f;
+  font-weight: bold;
+}
+
+.server-badge.render {
+  background: var(--retro-green);
+  color: #090a0f;
+}
+
+.server-badge.local {
+  background: var(--retro-cyan);
+  color: #090a0f;
+}
+
+.api-url-input {
+  font-size: 1rem !important;
+  padding: 0.4rem 0.8rem !important;
+  color: var(--text-main) !important;
+  background: rgba(5, 7, 15, 0.9) !important;
+}

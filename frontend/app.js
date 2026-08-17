@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
       vid2Min6s: "2. VİDEO EN AZ 6 SANİYE OLMALIDIR (MEVCUT: ",
       player1Default: "1. OYUNCU",
       player2Default: "2. OYUNCU",
-      failedGen: "VİDEO OLUŞTURMA BAŞARISIZ OLDU: "
+      failedGen: "VİDEO OLUŞTURMA BAŞARISIZ OLDU: ",
+      apiServerLabel: "SUNUCU ADRESİ (API)"
     },
     en: {
       subtitle: "Upload two vertical clips, customize character names & categories, and generate a beat-synced VS video.",
@@ -60,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
       vid2Min6s: "VIDEO 2 MUST BE AT LEAST 6 SECONDS LONG (CURRENT: ",
       player1Default: "PLAYER 1",
       player2Default: "PLAYER 2",
-      failedGen: "FAILED TO GENERATE VIDEO: "
+      failedGen: "FAILED TO GENERATE VIDEO: ",
+      apiServerLabel: "SERVER URL (API)"
     }
   };
 
@@ -293,6 +295,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Helper for dynamic API backend resolution
+  const defaultRenderUrl = 'https://compareclip.onrender.com';
+  const apiUrlInput = document.getElementById('apiUrl');
+  const activeServerBadge = document.getElementById('activeServerBadge');
+
+  async function resolveApiBaseUrl() {
+    if (apiUrlInput && apiUrlInput.value.trim()) {
+      const customUrl = apiUrlInput.value.trim().replace(/\/$/, '');
+      if (activeServerBadge) {
+        activeServerBadge.textContent = 'CUSTOM';
+        activeServerBadge.className = 'server-badge';
+      }
+      return customUrl;
+    }
+
+    const isLocalHost = window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.protocol === 'file:' ||
+      window.location.hostname === '';
+
+    if (isLocalHost) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1200);
+        const healthRes = await fetch('http://localhost:8000/health', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (healthRes.ok) {
+          if (activeServerBadge) {
+            activeServerBadge.textContent = 'LOCAL';
+            activeServerBadge.className = 'server-badge local';
+          }
+          return 'http://localhost:8000';
+        }
+      } catch (_) {
+        // Local server not running, auto-fallback to live Render backend
+      }
+    }
+
+    if (activeServerBadge) {
+      activeServerBadge.textContent = 'RENDER.COM';
+      activeServerBadge.className = 'server-badge render';
+    }
+    return defaultRenderUrl;
+  }
+
+  // Update server badge on page load & input change
+  resolveApiBaseUrl();
+  if (apiUrlInput) {
+    apiUrlInput.addEventListener('input', () => resolveApiBaseUrl());
+  }
+
   // Form Submit Handler
   generatorForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -325,13 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const player1Name = document.getElementById('player1Name').value.trim() || t.player1Default;
     const player2Name = document.getElementById('player2Name').value.trim() || t.player2Default;
 
-    // Automatic backend resolution: localhost/file protocol for local dev, Render.com for production
-    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '';
-    const defaultRenderUrl = 'https://compareclip.onrender.com';
-    const apiUrlInput = document.getElementById('apiUrl');
-    const baseUrl = apiUrlInput && apiUrlInput.value.trim()
-      ? apiUrlInput.value.trim().replace(/\/$/, '')
-      : (isLocalHost ? 'http://localhost:8000' : defaultRenderUrl);
+    const baseUrl = await resolveApiBaseUrl();
 
     const formData = new FormData();
     formData.append('video1', video1Input.files[0]);
@@ -382,7 +429,14 @@ document.addEventListener('DOMContentLoaded', () => {
       stopTimer();
       processingCard.classList.add('hidden');
       generatorForm.classList.remove('hidden');
-      showToast(`${t.failedGen}${err.message}`, true);
+      
+      let errMsg = err.message || '';
+      if (errMsg.includes('Failed to fetch') || errMsg.includes('fetch')) {
+        errMsg = currentLang === 'tr'
+          ? `Sunucuya bağlanılamadı (${baseUrl}). Render.com sunucusu uyanıyor olabilir (30-60s) veya internet bağlantınızı kontrol edin.`
+          : `Could not connect to server (${baseUrl}). Render.com server might be waking up (30-60s) or check your connection.`;
+      }
+      showToast(`${t.failedGen}${errMsg}`, true);
     }
   });
 
