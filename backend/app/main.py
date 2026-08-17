@@ -1,5 +1,13 @@
 import os
 import sys
+
+# Set OpenBLAS/OpenMP single-thread env vars BEFORE importing numpy/moviepy
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 import json
 import shutil
 import tempfile

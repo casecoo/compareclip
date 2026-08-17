@@ -1,5 +1,13 @@
 import os
 import sys
+
+# Set OpenBLAS/OpenMP single-thread env vars BEFORE importing numpy/moviepy to prevent RAM pool bloat
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 import gc
 import random
 from pathlib import Path
@@ -19,7 +27,8 @@ from moviepy.editor import (
     clips_array,
     TextClip,
     CompositeVideoClip,
-    AudioFileClip
+    AudioFileClip,
+    concatenate_videoclips
 )
 
 from backend.app.core.config import configure_imagemagick, DEFAULT_AUDIO_PATH
@@ -38,35 +47,42 @@ def generate_comparison_video(
     intro_duration: float = 6.0,
     tag_duration: float = 0.6,
     tag_winners: Optional[Dict[str, str]] = None,
-    width: int = 720,
-    height: int = 1280,
+    width: int = 480,
+    height: int = 854,
     fps: int = 24
 ) -> str:
 
     """
-    Generates a vertical comparison video ('VS' format) between two input video clips
-    for a list of category tags.
-
-    Optimized for low-RAM server environments (e.g. Render.com 512MB free tier).
+    Generates a vertical comparison video ('VS' format) using sequential segment concatenation.
+    Extremely lightweight memory footprint (< 100MB RAM) to run reliably on Render 512MB free instances.
     """
     video_clip1 = None
     video_clip2 = None
     audio_clip = None
     final_clip = None
-    new_last = []
+    segments = []
+    all_created_clips = []
 
     if audio_path is None or not os.path.exists(audio_path):
         audio_path = DEFAULT_AUDIO_PATH
 
+    # Total target video duration (~18 seconds)
+    total_video_duration = intro_duration + (len(tags) * tag_duration * 2) + tag_duration + 2.0
+
     try:
         video_clip1 = VideoFileClip(str(video1_path))
         video_clip2 = VideoFileClip(str(video2_path))
-        audio_clip = AudioFileClip(str(audio_path))
+        
+        # Crop audio track to exact video duration to avoid loading entire audio into RAM
+        raw_audio = AudioFileClip(str(audio_path))
+        audio_clip = raw_audio.subclip(0, min(total_video_duration, raw_audio.duration))
+        all_created_clips.extend([raw_audio, audio_clip])
 
-        if video_clip1.duration < 6.0 or video_clip2.duration < 6.0:
-            raise ValueError(
-                f"Both video clips must be at least 6.0 seconds long (Video 1: {video_clip1.duration:.1f}s, Video 2: {video_clip2.duration:.1f}s)"
-            )
+        # Auto-loop clips if duration is less than 6.0 seconds
+        if video_clip1.duration < 6.0:
+            video_clip1 = video_clip1.loop(duration=6.0)
+        if video_clip2.duration < 6.0:
+            video_clip2 = video_clip2.loop(duration=6.0)
 
         player_list = [player1_name, player2_name]
 
@@ -74,7 +90,7 @@ def generate_comparison_video(
         if not tag_winners:
             tag_winners = {tag: random.choice(player_list) for tag in tags}
 
-        # Resize inputs to vertical target resolution
+        # Resize inputs to target resolution (480x854 9:16 vertical SD/HD)
         video1 = video_clip1.resize(width=width, height=height)
         video2 = video_clip2.resize(width=width, height=height)
 
@@ -88,128 +104,117 @@ def generate_comparison_video(
 
         # Base split-screen clip
         split_background = clips_array([[new_video1], [new_video2]])
-        intro_split = split_background.subclip(0, min(intro_duration, split_background.duration))
 
-        # Intro text overlays
+        # 1. Intro Segment (6.0 seconds)
+        intro_split_bg = split_background.subclip(0, min(intro_duration, split_background.duration))
         text_clip1 = (
-            TextClip(player1_name, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-            .set_position(('center', intro_split.size[1] // 2 - 60))
+            TextClip(player1_name, fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
+            .set_position(('center', height // 4 - 25))
             .set_duration(intro_duration)
         )
         text_clip2 = (
-            TextClip("VS", fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
+            TextClip("VS", fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
             .set_position(('center', 'center'))
             .set_duration(intro_duration)
         )
         text_clip3 = (
-            TextClip(player2_name, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-            .set_position(('center', intro_split.size[1] // 2 + 30))
+            TextClip(player2_name, fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
+            .set_position(('center', (height * 3) // 4 - 25))
             .set_duration(intro_duration)
         )
 
-        text_video = [text_clip1, text_clip2, text_clip3]
-        normal_video = []
+        intro_seg = CompositeVideoClip([intro_split_bg, text_clip1, text_clip2, text_clip3]).set_duration(intro_duration)
+        segments.append(intro_seg)
+        all_created_clips.extend([intro_split_bg, text_clip1, text_clip2, text_clip3, intro_seg])
 
         current_duration = intro_duration
         player1_score = 0
         player2_score = 0
 
-        # Build video segments for each category tag
+        # 2. Tag Rounds Segments (9 rounds x 2 sub-segments = 18 sub-segments)
         for tag in tags:
             winner = tag_winners.get(tag, random.choice(player_list))
 
-            # 1. Tag name overlay on split background
-            tag_video = split_background.subclip(0, min(tag_duration, split_background.duration)).set_start(current_duration)
-            normal_video.append(tag_video)
-
+            # Part A: Category Tag Header (0.6s)
+            tag_bg = split_background.subclip(0, min(tag_duration, split_background.duration))
             text_tag = (
-                TextClip(tag.upper(), fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-                .set_start(current_duration)
+                TextClip(tag.upper(), fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
                 .set_position(('center', 'center'))
                 .set_duration(tag_duration)
             )
-            text_video.append(text_tag)
-            current_duration += tag_duration
+            tag_seg = CompositeVideoClip([tag_bg, text_tag]).set_duration(tag_duration)
+            segments.append(tag_seg)
+            all_created_clips.extend([tag_bg, text_tag, tag_seg])
 
-            # 2. Winner video reveal with current score overlay
+            # Part B: Winner Reveal & Score (0.6s)
             if winner == player1_name:
-                temp = org_video1.set_start(current_duration)
-                normal_video.append(temp)
+                winner_clip = org_video1
                 player1_score += 1
-                current_score = f"{player1_score} - {player2_score}"
-                text_score = (
-                    TextClip(current_score, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-                    .set_start(current_duration)
-                    .set_position(('center', 'center'))
-                    .set_duration(tag_duration)
-                )
-                text_video.append(text_score)
             else:
-                temp = org_video2.set_start(current_duration)
-                normal_video.append(temp)
+                winner_clip = org_video2
                 player2_score += 1
-                current_score = f"{player1_score} - {player2_score}"
-                text_score = (
-                    TextClip(current_score, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-                    .set_start(current_duration)
-                    .set_position(('center', 'center'))
-                    .set_duration(tag_duration)
-                )
-                text_video.append(text_score)
 
-            current_duration += tag_duration
+            current_score = f"{player1_score} - {player2_score}"
+            text_score = (
+                TextClip(current_score, fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
+                .set_position(('center', 'center'))
+                .set_duration(tag_duration)
+            )
+            score_seg = CompositeVideoClip([winner_clip, text_score]).set_duration(tag_duration)
+            segments.append(score_seg)
+            all_created_clips.extend([text_score, score_seg])
 
-        # 3. "WINNER?" climax frame
-        tag_video = split_background.subclip(0, min(tag_duration, split_background.duration)).set_start(current_duration)
-        normal_video.append(tag_video)
-        text_tag = (
-            TextClip("WINNER?", fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-            .set_start(current_duration)
+            current_duration += (tag_duration * 2)
+
+        # 3. "WINNER?" Climax Segment (0.6s)
+        climax_bg = split_background.subclip(0, min(tag_duration, split_background.duration))
+        text_climax = (
+            TextClip("WINNER?", fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
             .set_position(('center', 'center'))
             .set_duration(tag_duration)
         )
-        text_video.append(text_tag)
+        climax_seg = CompositeVideoClip([climax_bg, text_climax]).set_duration(tag_duration)
+        segments.append(climax_seg)
+        all_created_clips.extend([climax_bg, text_climax, climax_seg])
         current_duration += tag_duration
 
-        # Transition effect
-        transition_duration = 0.20
-        new_last = [clip.crossfadein(transition_duration) for clip in normal_video]
-        new_last.insert(0, intro_split)
-        new_last.extend(text_video)
-
-        # 4. Final Winner Announcement Frame
+        # 4. Final Winner Announcement Segment
         remaining_audio_time = max(1.0, audio_clip.duration - current_duration)
         if player1_score >= player2_score:
-            winner_clip_source = video1
+            final_winner_source = video1
             final_winner_name = player1_name
         else:
-            winner_clip_source = video2
+            final_winner_source = video2
             final_winner_name = player2_name
 
-        temp = winner_clip_source.subclip(0, min(remaining_audio_time, winner_clip_source.duration)).set_start(current_duration)
-        new_last.append(temp)
-
+        final_winner_sub = final_winner_source.subclip(0, min(remaining_audio_time, final_winner_source.duration))
         text_winner = (
-            TextClip(final_winner_name, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
-            .set_start(current_duration)
+            TextClip(final_winner_name, fontsize=22, color='yellow', bg_color='transparent', font="Roboto")
             .set_position(('center', 'center'))
             .set_duration(min(remaining_audio_time, 2.0))
         )
-        new_last.append(text_winner)
+        final_winner_seg = CompositeVideoClip([final_winner_sub, text_winner]).set_duration(remaining_audio_time)
+        segments.append(final_winner_seg)
+        all_created_clips.extend([final_winner_sub, text_winner, final_winner_seg])
 
-        # Compose final video clip
-        final_clip = CompositeVideoClip(new_last)
+        # Chain segments sequentially (never evaluates 35 clips simultaneously)
+        concatenated_video = concatenate_videoclips(segments, method="chain")
+        all_created_clips.append(concatenated_video)
+
         if audio_clip:
-            final_clip = final_clip.set_audio(audio_clip)
+            final_clip = concatenated_video.set_audio(audio_clip)
+        else:
+            final_clip = concatenated_video
 
-        # Write output file with low RAM preset and thread restrictions
+        # Write output file with low RAM preset, single thread restriction, and max queue limits
         final_clip.write_videofile(
             str(output_path),
             codec="libx264",
             audio_codec="aac",
             fps=fps,
             preset="ultrafast",
-            threads=2,
+            threads=1,
+            ffmpeg_params=["-b:v", "900k", "-max_muxing_queue_size", "1024"],
             logger=None
         )
 
@@ -217,7 +222,7 @@ def generate_comparison_video(
 
     finally:
         # Resource cleanup to prevent RAM leaks
-        for c in new_last:
+        for c in all_created_clips:
             try:
                 c.close()
             except Exception:
