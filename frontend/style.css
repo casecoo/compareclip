@@ -813,4 +813,208 @@ input[type="text"]:focus {
     opacity: 1;
     transform: translate(-50%, 0);
   }
-}
+}
+
+/* ==========================================================================
+   Retro Pixel Loading Screen Animation Overlay
+   ========================================================================== */
+.lang-switcher {
+  z-index: 10001; /* Above loader overlay */
+}
+
+.retro-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #05060b;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(167, 139, 250, 0.15) 0%, transparent 65%),
+    radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 1.5rem;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  visibility: visible;
+  overflow: hidden;
+}
+
+.retro-loader-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* CRT Overlay Scanlines */
+.crt-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.35) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.loader-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 540px;
+  width: 100%;
+}
+
+.loader-badge {
+  background: #090a0f;
+  border: 2px solid var(--retro-cyan);
+  color: var(--retro-cyan);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+  letter-spacing: 1px;
+}
+
+.loader-logo-wrapper {
+  margin-bottom: 1rem;
+}
+
+.loader-logo-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.7));
+  animation: retroPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes retroPulse {
+  0% {
+    transform: scale(0.96);
+    filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.5));
+  }
+  100% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 28px rgba(251, 191, 36, 0.85));
+  }
+}
+
+.loader-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  color: #ffffff;
+  text-shadow: 3px 3px 0px var(--retro-purple), 0 0 20px rgba(167, 139, 250, 0.6);
+  margin-bottom: 1.2rem;
+  letter-spacing: -1px;
+}
+
+.loader-status {
+  font-family: 'Silkscreen', monospace;
+  font-size: 1rem;
+  color: var(--retro-yellow);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+  min-height: 1.5rem;
+}
+
+/* Retro 8-Bit Progress Bar */
+.retro-progress-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.retro-progress-bar {
+  width: 100%;
+  height: 26px;
+  background: #020306;
+  border: 3px solid var(--retro-purple);
+  box-shadow: 0 0 15px rgba(167, 139, 250, 0.35), inset 0 0 8px rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  padding: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--retro-blue), var(--retro-purple), var(--retro-pink), var(--retro-yellow));
+  background-size: 200% 100%;
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.8);
+  transition: width 0.1s linear;
+  animation: gradientShift 2s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.retro-progress-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.retro-progress-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.9rem;
+  color: var(--retro-cyan);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
+.loader-subtext {
+  font-family: 'VT323', monospace;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* Mobile Adjustments for Retro Loader */
+@media (max-width: 480px) {
+  .loader-title {
+    font-size: 1.2rem;
+  }
+  .loader-badge {
+    font-size: 0.55rem;
+  }
+  .loader-status {
+    font-size: 0.85rem;
+  }
+  .retro-progress-bar {
+    height: 22px;
+  }
+  .retro-progress-text {
+    font-size: 0.8rem;
+  }
+  .loader-subtext {
+    font-size: 1.1rem;
+  }
+}
+

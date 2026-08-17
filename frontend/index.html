@@ -16,6 +16,31 @@
 </head>
 
 <body>
+  <!-- Retro Pixel Loading Screen Overlay -->
+  <div id="retroLoader" class="retro-loader-overlay">
+    <div class="crt-scanlines"></div>
+    <div class="loader-content">
+      <div class="loader-badge">COMPARECLIP 8-BIT</div>
+      <div class="loader-logo-wrapper">
+        <img src="icon.png" alt="CompareClip Logo" class="loader-logo-icon">
+      </div>
+      <h1 class="loader-title">COMPARECLIP</h1>
+      <p class="loader-status" id="loaderStatus" data-i18n="loadingStatus">SİSTEM YÜKLENİYOR...</p>
+      
+      <!-- Retro 8-bit Progress Bar -->
+      <div class="retro-progress-wrapper">
+        <div class="retro-progress-bar">
+          <div class="retro-progress-fill" id="loaderProgressFill"></div>
+        </div>
+        <div class="retro-progress-info">
+          <span class="retro-progress-text" id="loaderProgressText">0%</span>
+        </div>
+      </div>
+      
+      <p class="loader-subtext" data-i18n="loadingSubtext">VS VİDEO MOTORU HAZIRLANIYOR</p>
+    </div>
+  </div>
+
   <canvas id="pixelSpaceCanvas"></canvas>
   <div class="background-glow"></div>
 

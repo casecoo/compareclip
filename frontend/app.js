@@ -32,7 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
       player1Default: "1. OYUNCU",
       player2Default: "2. OYUNCU",
       failedGen: "VİDEO OLUŞTURMA BAŞARISIZ OLDU: ",
-      apiServerLabel: "SUNUCU ADRESİ (API)"
+      apiServerLabel: "SUNUCU ADRESİ (API)",
+      loadingStatus: "SİSTEM YÜKLENİYOR...",
+      loadingSubtext: "VS VİDEO MOTORU HAZIRLANIYOR",
+      loadingPhase1: "PİKSEL MOTORU YÜKLENİYOR...",
+      loadingPhase2: "RİTİM SENKRONİZASYONU HAZIR...",
+      loadingPhase3: "HAZIR!"
     },
     en: {
       subtitle: "Upload two vertical clips, customize character names & categories, and generate a beat-synced VS video.",
@@ -62,7 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
       player1Default: "PLAYER 1",
       player2Default: "PLAYER 2",
       failedGen: "FAILED TO GENERATE VIDEO: ",
-      apiServerLabel: "SERVER URL (API)"
+      apiServerLabel: "SERVER URL (API)",
+      loadingStatus: "INITIALIZING SYSTEM...",
+      loadingSubtext: "PREPARING VS VIDEO ENGINE",
+      loadingPhase1: "LOADING PIXEL ENGINE...",
+      loadingPhase2: "BEAT SYNC READY...",
+      loadingPhase3: "SYSTEM READY!"
     }
   };
 
@@ -465,6 +475,56 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
   }
 
+  // Retro Pixel Loader Animation Controller
+  let loaderPhaseKey = 'loadingStatus';
+  function initRetroLoaderAnimation() {
+    const retroLoader = document.getElementById('retroLoader');
+    const loaderProgressFill = document.getElementById('loaderProgressFill');
+    const loaderProgressText = document.getElementById('loaderProgressText');
+    const loaderStatus = document.getElementById('loaderStatus');
+
+    if (!retroLoader || !loaderProgressFill || !loaderProgressText || !loaderStatus) return;
+
+    let progress = 0;
+    const durationMs = 1800; // 1.8 seconds loading screen
+    const intervalMs = 25;
+    const step = (100 / (durationMs / intervalMs));
+
+    const loaderInterval = setInterval(() => {
+      progress += step;
+      if (progress > 100) progress = 100;
+
+      loaderProgressFill.style.width = `${progress}%`;
+      loaderProgressText.textContent = `${Math.floor(progress)}%`;
+
+      let newPhaseKey = loaderPhaseKey;
+      if (progress < 30) {
+        newPhaseKey = 'loadingStatus';
+      } else if (progress < 70) {
+        newPhaseKey = 'loadingPhase1';
+      } else if (progress < 100) {
+        newPhaseKey = 'loadingPhase2';
+      } else {
+        newPhaseKey = 'loadingPhase3';
+      }
+
+      if (newPhaseKey !== loaderPhaseKey) {
+        loaderPhaseKey = newPhaseKey;
+        loaderStatus.setAttribute('data-i18n', loaderPhaseKey);
+        if (translations[currentLang] && translations[currentLang][loaderPhaseKey]) {
+          loaderStatus.textContent = translations[currentLang][loaderPhaseKey];
+        }
+      }
+
+      if (progress >= 100) {
+        clearInterval(loaderInterval);
+        setTimeout(() => {
+          retroLoader.classList.add('fade-out');
+        }, 400);
+      }
+    }, intervalMs);
+  }
+
   // Initialize Canvas Background
   initPixelSpaceCanvas();
 
@@ -473,4 +533,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial tag render (empty by default)
   renderTags();
+
+  // Start Retro Loading Animation
+  initRetroLoaderAnimation();
 });
+
