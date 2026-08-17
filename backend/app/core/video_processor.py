@@ -1,5 +1,6 @@
 import os
 import sys
+import gc
 import random
 from pathlib import Path
 from typing import List, Dict, Optional, Union
@@ -23,8 +24,6 @@ from moviepy.editor import (
 
 from backend.app.core.config import configure_imagemagick, DEFAULT_AUDIO_PATH
 
-
-
 # Ensure ImageMagick is configured properly on module import
 configure_imagemagick()
 
@@ -39,8 +38,8 @@ def generate_comparison_video(
     intro_duration: float = 6.0,
     tag_duration: float = 0.6,
     tag_winners: Optional[Dict[str, str]] = None,
-    width: int = 1080,
-    height: int = 1920,
+    width: int = 720,
+    height: int = 1280,
     fps: int = 24
 ) -> str:
 
@@ -48,12 +47,13 @@ def generate_comparison_video(
     Generates a vertical comparison video ('VS' format) between two input video clips
     for a list of category tags.
 
-    Uses `song.mp3` as the default beat-synced audio track.
+    Optimized for low-RAM server environments (e.g. Render.com 512MB free tier).
     """
     video_clip1 = None
     video_clip2 = None
     audio_clip = None
     final_clip = None
+    new_last = []
 
     if audio_path is None or not os.path.exists(audio_path):
         audio_path = DEFAULT_AUDIO_PATH
@@ -69,7 +69,6 @@ def generate_comparison_video(
             )
 
         player_list = [player1_name, player2_name]
-
 
         # Determine winner for each category tag if not explicitly provided
         if not tag_winners:
@@ -93,17 +92,17 @@ def generate_comparison_video(
 
         # Intro text overlays
         text_clip1 = (
-            TextClip(player1_name, fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
-            .set_position(('center', intro_split.size[1] // 2 - 70))
+            TextClip(player1_name, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
+            .set_position(('center', intro_split.size[1] // 2 - 60))
             .set_duration(intro_duration)
         )
         text_clip2 = (
-            TextClip("VS", fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+            TextClip("VS", fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
             .set_position(('center', 'center'))
             .set_duration(intro_duration)
         )
         text_clip3 = (
-            TextClip(player2_name, fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+            TextClip(player2_name, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
             .set_position(('center', intro_split.size[1] // 2 + 30))
             .set_duration(intro_duration)
         )
@@ -124,7 +123,7 @@ def generate_comparison_video(
             normal_video.append(tag_video)
 
             text_tag = (
-                TextClip(tag.upper(), fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+                TextClip(tag.upper(), fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
                 .set_start(current_duration)
                 .set_position(('center', 'center'))
                 .set_duration(tag_duration)
@@ -139,7 +138,7 @@ def generate_comparison_video(
                 player1_score += 1
                 current_score = f"{player1_score} - {player2_score}"
                 text_score = (
-                    TextClip(current_score, fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+                    TextClip(current_score, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
                     .set_start(current_duration)
                     .set_position(('center', 'center'))
                     .set_duration(tag_duration)
@@ -151,7 +150,7 @@ def generate_comparison_video(
                 player2_score += 1
                 current_score = f"{player1_score} - {player2_score}"
                 text_score = (
-                    TextClip(current_score, fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+                    TextClip(current_score, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
                     .set_start(current_duration)
                     .set_position(('center', 'center'))
                     .set_duration(tag_duration)
@@ -164,7 +163,7 @@ def generate_comparison_video(
         tag_video = split_background.subclip(0, min(tag_duration, split_background.duration)).set_start(current_duration)
         normal_video.append(tag_video)
         text_tag = (
-            TextClip("WINNER?", fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+            TextClip("WINNER?", fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
             .set_start(current_duration)
             .set_position(('center', 'center'))
             .set_duration(tag_duration)
@@ -191,7 +190,7 @@ def generate_comparison_video(
         new_last.append(temp)
 
         text_winner = (
-            TextClip(final_winner_name, fontsize=30, color='yellow', bg_color='transparent', font="Roboto")
+            TextClip(final_winner_name, fontsize=28, color='yellow', bg_color='transparent', font="Roboto")
             .set_start(current_duration)
             .set_position(('center', 'center'))
             .set_duration(min(remaining_audio_time, 2.0))
@@ -203,18 +202,26 @@ def generate_comparison_video(
         if audio_clip:
             final_clip = final_clip.set_audio(audio_clip)
 
-        # Write output file
+        # Write output file with low RAM preset and thread restrictions
         final_clip.write_videofile(
             str(output_path),
             codec="libx264",
             audio_codec="aac",
-            fps=fps
+            fps=fps,
+            preset="ultrafast",
+            threads=2,
+            logger=None
         )
 
         return str(output_path)
 
     finally:
         # Resource cleanup to prevent RAM leaks
+        for c in new_last:
+            try:
+                c.close()
+            except Exception:
+                pass
         if final_clip:
             try:
                 final_clip.close()
@@ -235,3 +242,4 @@ def generate_comparison_video(
                 audio_clip.close()
             except Exception:
                 pass
+        gc.collect()

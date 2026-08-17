@@ -39,12 +39,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import gc
+
 def cleanup_temp_dir(temp_dir: str):
     """Background task to remove temporary working files after returning response."""
     try:
         shutil.rmtree(temp_dir, ignore_errors=True)
     except Exception as e:
         print(f"Error cleaning up temp directory {temp_dir}: {e}")
+    finally:
+        gc.collect()
 
 @app.get("/")
 @app.get("/health")
@@ -75,8 +79,6 @@ async def compare_videos(
             detail=f"Exactly 9 category tags are required for song beat synchronization (Provided: {len(category_list)})."
         )
 
-
-
     # Create temporary directory for input/output files
     temp_dir = tempfile.mkdtemp(prefix="vid_comp_")
 
@@ -88,12 +90,14 @@ async def compare_videos(
         v2_path = os.path.join(temp_dir, f"input_2{v2_ext}")
         out_path = os.path.join(temp_dir, "output.mp4")
 
-        # Save uploaded files to disk
+        # Save uploaded files to disk & close handles
         with open(v1_path, "wb") as buffer:
             shutil.copyfileobj(video1.file, buffer)
+        await video1.close()
 
         with open(v2_path, "wb") as buffer:
             shutil.copyfileobj(video2.file, buffer)
+        await video2.close()
 
         # Generate comparison video
         generate_comparison_video(
