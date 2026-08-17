@@ -58,8 +58,8 @@ def cleanup_temp_dir(temp_dir: str):
     finally:
         gc.collect()
 
-@app.get("/")
-@app.get("/health")
+@app.api_route("/", methods=["GET", "HEAD"])
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "ok", "service": "video-comparison-generator"}
 
