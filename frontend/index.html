@@ -37,7 +37,7 @@
     </header>
 
     <main class="app-main">
-      <form id="generatorForm" class="config-card">
+      <form id="generatorForm" class="config-card" autocomplete="off">
 
         <!-- Players Setup Grid -->
         <div class="players-grid">
@@ -48,12 +48,12 @@
             </div>
             <div class="form-group">
               <label for="player1Name" data-i18n="characterTitleLabel">KARAKTER / BASLIK</label>
-              <input type="text" id="player1Name" name="player1Name" value="" required placeholder="e.g. BATMAN">
+              <input type="text" id="player1Name" name="player1Name" value="" required placeholder="e.g. BATMAN" autocomplete="off">
             </div>
             <div class="form-group">
               <label data-i18n="videoClipLabel">VIDEO KLIP (MIN 6SN, MAX 20SN)</label>
               <div class="file-dropzone" id="dropzone1">
-                <input type="file" id="video1" name="video1" accept="video/*" required class="file-input">
+                <input type="file" id="video1" name="video1" accept="video/*" required class="file-input" autocomplete="off">
                 <div class="dropzone-content">
                   <div class="upload-icon">📹</div>
                   <span class="file-label" id="label1" data-i18n="chooseVideo1">1. Videoyu Seçin veya Sürükleyin</span>
@@ -74,12 +74,12 @@
             </div>
             <div class="form-group">
               <label for="player2Name" data-i18n="characterTitleLabel">KARAKTER / BASLIK</label>
-              <input type="text" id="player2Name" name="player2Name" value="" required placeholder="e.g. X-MEN">
+              <input type="text" id="player2Name" name="player2Name" value="" required placeholder="e.g. X-MEN" autocomplete="off">
             </div>
             <div class="form-group">
               <label data-i18n="videoClipLabel">VIDEO KLIP (MIN 6SN, MAX 20SN)</label>
               <div class="file-dropzone" id="dropzone2">
-                <input type="file" id="video2" name="video2" accept="video/*" required class="file-input">
+                <input type="file" id="video2" name="video2" accept="video/*" required class="file-input" autocomplete="off">
                 <div class="dropzone-content">
                   <div class="upload-icon">📹</div>
                   <span class="file-label" id="label2" data-i18n="chooseVideo2">2. Videoyu Seçin veya Sürükleyin</span>
@@ -102,18 +102,9 @@
           </div>
 
           <div class="add-tag-row">
-            <input type="text" id="newTagInput" data-i18n-placeholder="addTagPlaceholder" placeholder="Özel tag ekle (örn. GÜÇ)" maxlength="25">
+            <input type="text" id="newTagInput" data-i18n-placeholder="addTagPlaceholder" placeholder="Özel tag ekle (örn. GÜÇ)" maxlength="25" autocomplete="off">
             <button type="button" id="addTagBtn" class="btn-secondary" data-i18n="addTagBtn">+ Tag Ekle</button>
           </div>
-        </div>
-
-        <!-- API Server Config Card -->
-        <div class="api-server-card">
-          <div class="api-server-header">
-            <span class="api-server-label" data-i18n="apiServerLabel">SUNUCU ADRESI (API)</span>
-            <span id="activeServerBadge" class="server-badge render">RENDER.COM</span>
-          </div>
-          <input type="text" id="apiUrl" placeholder="https://compareclip.onrender.com" class="api-url-input">
         </div>
 
         <!-- Submit Button -->

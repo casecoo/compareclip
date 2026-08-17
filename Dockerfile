@@ -8,9 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-dejavu \
     && rm -rf /var/lib/apt/lists/*
 
-# Modify ImageMagick policy to allow text/font rendering
-RUN sed -i 's/<policy domain="coder" rights="none" pattern="LABEL" \/>/<policy domain="coder" rights="read|write" pattern="LABEL" \/>/' /etc/ImageMagick-6/policy.xml || true
-RUN sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+# Modify ImageMagick policy to allow text/font rendering and @/tmp file access for MoviePy
+RUN sed -i 's/rights="none"/rights="read|write"/g' /etc/ImageMagick-6/policy.xml || true
+RUN sed -i 's/rights="none"/rights="read|write"/g' /etc/ImageMagick-7/policy.xml || true
+RUN sed -i 's/pattern="@\*"/pattern="*"/g' /etc/ImageMagick-6/policy.xml || true
+RUN sed -i 's/pattern="@\*"/pattern="*"/g' /etc/ImageMagick-7/policy.xml || true
 
 WORKDIR /app
 

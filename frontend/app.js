@@ -295,56 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Helper for dynamic API backend resolution
-  const defaultRenderUrl = 'https://compareclip.onrender.com';
-  const apiUrlInput = document.getElementById('apiUrl');
-  const activeServerBadge = document.getElementById('activeServerBadge');
-
-  async function resolveApiBaseUrl() {
-    if (apiUrlInput && apiUrlInput.value.trim()) {
-      const customUrl = apiUrlInput.value.trim().replace(/\/$/, '');
-      if (activeServerBadge) {
-        activeServerBadge.textContent = 'CUSTOM';
-        activeServerBadge.className = 'server-badge';
-      }
-      return customUrl;
-    }
-
-    const isLocalHost = window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.protocol === 'file:' ||
-      window.location.hostname === '';
-
-    if (isLocalHost) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1200);
-        const healthRes = await fetch('http://localhost:8000/health', { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (healthRes.ok) {
-          if (activeServerBadge) {
-            activeServerBadge.textContent = 'LOCAL';
-            activeServerBadge.className = 'server-badge local';
-          }
-          return 'http://localhost:8000';
-        }
-      } catch (_) {
-        // Local server not running, auto-fallback to live Render backend
-      }
-    }
-
-    if (activeServerBadge) {
-      activeServerBadge.textContent = 'RENDER.COM';
-      activeServerBadge.className = 'server-badge render';
-    }
-    return defaultRenderUrl;
-  }
-
-  // Update server badge on page load & input change
-  resolveApiBaseUrl();
-  if (apiUrlInput) {
-    apiUrlInput.addEventListener('input', () => resolveApiBaseUrl());
-  }
+  // Backend production URL (Always uses live Render.com backend)
+  const baseUrl = 'https://compareclip.onrender.com';
 
   // Form Submit Handler
   generatorForm.addEventListener('submit', async (e) => {
@@ -377,8 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const player1Name = document.getElementById('player1Name').value.trim() || t.player1Default;
     const player2Name = document.getElementById('player2Name').value.trim() || t.player2Default;
-
-    const baseUrl = await resolveApiBaseUrl();
 
     const formData = new FormData();
     formData.append('video1', video1Input.files[0]);
